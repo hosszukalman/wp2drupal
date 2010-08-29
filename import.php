@@ -1,6 +1,6 @@
 <?php
 /**
- * @todo Registy class to store DB connections.
+ * 
  */
 ini_set('display_errors', 1);
 error_reporting(E_ALL | E_STRICT);
@@ -10,6 +10,7 @@ foreach (glob('lib/*.php') as $filename) {
 }
 
 try {
+  // DB connections
   $dsn = 'mysql:dbname=hk_import;host=localhost';
   $user = 'hk_drupal';
   $password = 'sd6EnGpGLZ369bpW';
@@ -20,6 +21,7 @@ try {
   $password = 'sd6EnGpGLZ369bpW';
   $dbhWp = new PDO($dsn, $user, $password);
 
+  // Store DB connections to Registry
   Registry::set('dbhImport', $dbhImport);
   Registry::set('dbhWp', $dbhWp);
 
