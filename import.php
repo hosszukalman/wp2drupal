@@ -10,6 +10,16 @@ foreach (glob('lib/*.php') as $filename) {
 }
 
 try {
+  $dsn = 'mysql:dbname=hk_import;host=localhost';
+  $user = 'hk_drupal';
+  $password = 'sd6EnGpGLZ369bpW';
+  $dbhImport = new PDO($dsn, $user, $password);
+
+  $dsn = 'mysql:dbname=hk_wp;host=localhost';
+  $user = 'hk_drupal';
+  $password = 'sd6EnGpGLZ369bpW';
+  $dbhWp = new PDO($dsn, $user, $password);
+
   if ($_SERVER['argc'] !== 3) {
     throw new Exception('use php import.php [class] [execute|deleteAll]');
   }
