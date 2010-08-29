@@ -1,4 +1,8 @@
 <?php
+/**
+ * @todo Add comment_save function to skip user access
+ * @todo Add node_delete function to skip user access
+ */
 // Add remote addr to skip errors
 $_SERVER['REMOTE_ADDR'] = 'wp2drupal';
 
