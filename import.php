@@ -20,6 +20,9 @@ try {
   $password = 'sd6EnGpGLZ369bpW';
   $dbhWp = new PDO($dsn, $user, $password);
 
+  Registry::set('dbhImport', $dbhImport);
+  Registry::set('dbhWp', $dbhWp);
+
   if ($_SERVER['argc'] !== 3) {
     throw new Exception('use php import.php [class] [execute|deleteAll]');
   }
