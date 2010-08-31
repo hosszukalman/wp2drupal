@@ -25,6 +25,9 @@ try {
   Registry::set('dbhImport', $dbhImport);
   Registry::set('dbhWp', $dbhWp);
 
+  $dbhImport->exec('SET NAMES "UTF8"');
+  $dbhWp->exec('SET NAMES "UTF8"');
+
   if ($_SERVER['argc'] !== 3) {
     throw new Exception('use php import.php [class] [execute|deleteAll]');
   }
