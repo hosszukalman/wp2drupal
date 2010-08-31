@@ -7,12 +7,13 @@ class Terms extends Importer {
   private $vid = NULL;
 
   function __construct() {
-
+    parent::__construct();
   }
 
   public function deleteAll() {
     $this->deleteTerms();
     $this->deleteVocabs();
+    $this->deleteImportTable();
   }
 
   private function deleteTerms() {
@@ -29,9 +30,13 @@ class Terms extends Importer {
     }
   }
 
+  private function deleteImportTable() {
+    $this->dbhImport->exec('TRUNCATE TABLE terms');
+  }
+
   public function execute() {
     $this->createVocab();
-    var_dump($this->vid);
+    $this->saveTerms();
   }
 
   private function createVocab() {
@@ -48,5 +53,18 @@ class Terms extends Importer {
     );
     taxonomy_save_vocabulary($vocabulary);
     $this->vid = $vocabulary['vid'];
+  }
+
+  private function saveTerms() {
+    foreach ($this->dbhWp->query('SELECT t.* FROM wp_term_taxonomy tt INNER JOIN wp_terms t USING(term_id) WHERE taxonomy = \'category\'', PDO::FETCH_ASSOC) as $term) {
+
+      $drupalTerm = array();
+
+      $drupalTerm['vid'] = $this->vid;
+      $drupalTerm['name'] = $term['name'];
+      taxonomy_save_term($drupalTerm);
+      
+      $this->dbhImport->query('INSERT INTO terms VALUES ('. $term['term_id'] . ', ' . $drupalTerm['tid'] . ')');
+    }
   }
 }
