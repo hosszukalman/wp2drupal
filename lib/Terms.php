@@ -14,6 +14,8 @@ class Terms extends Importer {
     $this->deleteTerms();
     $this->deleteVocabs();
     $this->deleteImportTable();
+
+    Variables::deleteVariable('vocab_id');
   }
 
   private function deleteTerms() {
