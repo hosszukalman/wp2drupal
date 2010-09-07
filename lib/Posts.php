@@ -30,6 +30,7 @@ class Posts extends Importer {
 
   public function deleteAll() {
     $this->deleteNodes();
+    $this->deleteImportTable();
   }
 
   private function deleteNodes() {
@@ -38,6 +39,10 @@ class Posts extends Importer {
     while ($row = db_fetch_array($result)) {
       $this->node_delete($row['nid']);
     }
+  }
+
+  private function deleteImportTable() {
+    $this->dbhImport->exec('TRUNCATE TABLE posts');
   }
 
   public function execute() {
