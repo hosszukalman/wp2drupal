@@ -67,6 +67,8 @@ class Posts extends Importer {
       $this->addMetaKeywords($node, $post['ID']);
 
       node_save($node);
+
+      $this->dbhImport->query('INSERT INTO posts VALUES ('. $post['ID'] . ', ' . $node->nid . ')');
     }
   }
 
