@@ -37,7 +37,23 @@ class Posts extends Importer {
       $node->format = 4; // New importer input filter
       $node->comment = 2;
 
+      $this->addGeSHiFilter($node);
+
       node_save($node);
     }
+  }
+
+  private function addGeSHiFilter(&$node) {
+    $pattern = array(
+      '<pre',
+      '</pre',
+    );
+
+    $replacament = array(
+      '<code',
+      '</code',
+    );
+
+    $node->body = str_replace($pattern, $replacament, $node->body);
   }
 }
