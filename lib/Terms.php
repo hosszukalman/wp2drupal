@@ -37,6 +37,8 @@ class Terms extends Importer {
   public function execute() {
     $this->createVocab();
     $this->saveTerms();
+
+    Variables::saveVariable('vocab_id', $this->vid);
   }
 
   private function createVocab() {
