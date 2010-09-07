@@ -51,7 +51,7 @@ class Posts extends Importer {
 
       $node = new stdClass();
       $node->type = 'blog';
-      $node->uid = 1;
+      $node->uid = 3; // hosszu.kalman
       $node->created = strtotime($post['post_date']);
       $node->status = ($post['post_status'] == 'publish');
       $node->title = $post['post_title'];
