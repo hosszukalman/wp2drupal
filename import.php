@@ -6,8 +6,13 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL | E_STRICT);
 
 foreach (glob('lib/*.php') as $filename) {
+  if (strpos($filename, 'Comments')) {
+    continue;
+  }
   include_once $filename;
 }
+
+include_once 'lib/Comments.php';
 
 try {
   // DB connections
