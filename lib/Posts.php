@@ -38,6 +38,8 @@ class Posts extends Importer {
       $node->comment = 2;
 
       $this->addGeSHiFilter($node);
+      
+      $node->teaser = node_teaser($node->body, 4);
 
       node_save($node);
     }
