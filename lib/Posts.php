@@ -7,12 +7,23 @@ class Posts extends Importer {
    */
   private $getWpTermsStatement;
 
+  /**
+   * @var PDOStatement
+   */
+  private $getWpKeywordsStatement;
+
   function __construct() {
     parent::__construct();
 
     $this->getWpTermsStatement = $this->dbhWp->prepare("SELECT t.name FROM `wp_posts` p
       INNER JOIN wp_term_relationships tr ON (p.ID = tr.object_id)
       INNER JOIN wp_term_taxonomy tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = 'category')
+      INNER JOIN wp_terms t ON (tt.term_id = t.term_id)
+      WHERE p.post_type = 'post' AND p.ID = :post_id");
+
+    $this->getWpKeywordsStatement = $this->dbhWp->prepare("SELECT t.name FROM `wp_posts` p
+      INNER JOIN wp_term_relationships tr ON (p.ID = tr.object_id)
+      INNER JOIN wp_term_taxonomy tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = 'post_tag')
       INNER JOIN wp_terms t ON (tt.term_id = t.term_id)
       WHERE p.post_type = 'post' AND p.ID = :post_id");
   }
@@ -53,6 +64,7 @@ class Posts extends Importer {
       $node->teaser = node_teaser($node->body, 4);
 
       $this->addTerms($node, $post['ID']);
+      $this->addMetaKeywords($node, $post['ID']);
 
       node_save($node);
     }
@@ -81,5 +93,17 @@ class Posts extends Importer {
     }
 
     $node->taxonomy['tags'][Variables::getVariable('vocab_id')] = implode(',', $terms);
+  }
+
+  private function addMetaKeywords(&$node, $postId) {
+    $terms = array();
+    $this->getWpKeywordsStatement->execute(array(':post_id' => $postId));
+    $result = $this->getWpKeywordsStatement->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($result as $row) {
+      $terms[] = $row['name'];
+    }
+
+    $node->nodewords['keywords']['value'] = implode(',', $terms);
+
   }
 }
