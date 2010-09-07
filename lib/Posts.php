@@ -34,7 +34,7 @@ class Posts extends Importer {
       $node->status = ($post['post_status'] == 'publish');
       $node->title = $post['post_title'];
       $node->body = $post['post_content'];
-      $node->format = 3;
+      $node->format = 4; // New importer input filter
       $node->comment = 2;
 
       node_save($node);
