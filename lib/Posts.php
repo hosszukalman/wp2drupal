@@ -2,8 +2,19 @@
 
 class Posts extends Importer {
 
+  /**
+   * @var PDOStatement
+   */
+  private $getWpTermsStatement;
+
   function __construct() {
     parent::__construct();
+
+    $this->getWpTermsStatement = $this->dbhWp->prepare("SELECT t.name FROM `wp_posts` p
+      INNER JOIN wp_term_relationships tr ON (p.ID = tr.object_id)
+      INNER JOIN wp_term_taxonomy tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = 'category')
+      INNER JOIN wp_terms t ON (tt.term_id = t.term_id)
+      WHERE p.post_type = 'post' AND p.ID = :post_id");
   }
 
   public function deleteAll() {
@@ -41,6 +52,8 @@ class Posts extends Importer {
       
       $node->teaser = node_teaser($node->body, 4);
 
+      $this->addTerms($node, $post['ID']);
+
       node_save($node);
     }
   }
@@ -57,5 +70,16 @@ class Posts extends Importer {
     );
 
     $node->body = str_replace($pattern, $replacament, $node->body);
+  }
+
+  private function addTerms(&$node, $postId) {
+    $terms = array();
+    $this->getWpTermsStatement->execute(array(':post_id' => $postId));
+    $result = $this->getWpTermsStatement->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($result as $row) {
+      $terms[] = $row['name'];
+    }
+
+    $node->taxonomy['tags'][Variables::getVariable('vocab_id')] = implode(',', $terms);
   }
 }
