@@ -74,7 +74,25 @@ class Posts extends Importer {
       node_save($node);
 
       $this->dbhImport->query('INSERT INTO posts VALUES ('. $post['ID'] . ', ' . $node->nid . ')');
+
+      $redirect = array(
+        'source' => $post['post_name'],
+        'redirect' => 'node/' . $node->nid,
+      );
+      $this->saveRedirect($redirect);
+
+      if ($post['pinged']) {
+        $redirect = array(
+          'source' => $post['pinged'],
+          'redirect' => 'node/' . $node->nid,
+        );
+        $this->saveRedirect($redirect);
+      }
     }
+  }
+
+  private function saveRedirect($redirect) {
+    path_redirect_save($redirect);
   }
 
   private function addGeSHiFilter(&$node) {
