@@ -19,7 +19,26 @@ class Comments extends Importer {
   }
 
   public function deleteAll() {
+    $this->deleteComments();
+    $this->deleteImportTable();
+  }
 
+  private function deleteComments() {
+    module_load_include('inc', 'comment', 'comment.admin');
+
+    $result = db_query("SELECT c.*, u.name AS registered_name, u.uid FROM {comments} c INNER JOIN {users} u ON u.uid = c.uid");
+
+    while ($comment = db_fetch_object($result)) {
+      // Delete comment and its replies.
+      _comment_delete_thread($comment);
+      _comment_update_node_statistics($comment->nid);
+    }
+    // Clear the cache so an anonymous user sees that his comment was deleted.
+    cache_clear_all();
+  }
+
+  private function deleteImportTable() {
+    $this->dbhImport->exec('TRUNCATE TABLE comments');
   }
 
   public function execute() {
